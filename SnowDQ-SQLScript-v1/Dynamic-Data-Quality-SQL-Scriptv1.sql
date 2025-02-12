@@ -1,3 +1,28 @@
+--Step 1
+--Create the landing table for DQ Results
+CREATE OR REPLACE TABLE YOUR_DB.YOUR_SCHEMA.DATA_QUALITY_RESULTS_TBL(
+TABLE_NAME VARCHAR, 
+CHECK_DATE DATE,
+ROW_KEY ARRAY,
+DUPLICATE_COUNT INT, 
+NULL_COUNT INT,
+FRESHNESS_DAYS_SINCE_LAST_UPDATE INT, 
+CHECK_RUN_TIMESTAMP DATETIME
+);
+
+--Step 2
+--Create the landing table for DQ Results
+CREATE OR REPLACE TABLE YOUR_DB.YOUR_SCHEMA.DATA_QUALITY_CONFIG_TBL (
+FULL_TABLE_LINK_NAME VARCHAR,
+DATABASE_NAME VARCHAR,
+SCHEMA_NAME VARCHAR,
+TABLE_NAME VARCHAR,
+COMPLETE_RECORD_SQL_LIST VARCHAR,
+NULL_COLUMN_CHECK VARCHAR
+);
+
+--Step 3
+--The main procedure that defines data quality checks
 CREATE OR REPLACE PROCEDURE YOUR_DB.YOUR_SCHEMA.CHECK_DATA_QUALITY_PROC()
 RETURNS STRING
 LANGUAGE SQL
@@ -162,7 +187,7 @@ BEGIN
         FROM YOUR_DB.YOUR_SCHEMA.temp_result_table_completeness;
 
         -- 4. Insert results into the data quality results table
-        INSERT INTO YOUR_DB.YOUR_SCHEMA.DATA_QUALITY_TEST_TBL (
+        INSERT INTO YOUR_DB.YOUR_SCHEMA.DATA_QUALITY_RESULTS_TBL (
             TABLE_NAME, 
             CHECK_DATE,
             ROW_KEY,
@@ -197,7 +222,7 @@ BEGIN
     DROP TABLE IF EXISTS YOUR_DB.YOUR_SCHEMA.temp_result_table_completeness;
 
     --RETURN 'Data Quality Check Completed';
-
+    --OR use below for preview output
     RETURN 'Table: ' || table_name || ', Duplicate Count: ' || duplicate_count_result || ', Row Key: ' || duplicate_row_key_string;
     
 END;
